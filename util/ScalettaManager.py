@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from difflib import SequenceMatcher
 import shutil
-from util.Consts import Consts
+from util.OsManager import OsManager
 
 
 class ScalettaManager:
@@ -15,7 +15,7 @@ class ScalettaManager:
     @staticmethod
     def __prepare_song_source_list__():
         song_source_list = []
-        for song in Path(Consts.get_song_dir()).iterdir():
+        for song in Path(OsManager.get_song_dir()).iterdir():
             song_source_list.append(song)
         return song_source_list
 
@@ -28,7 +28,7 @@ class ScalettaManager:
 
     @staticmethod
     def __delete_dest_folder():
-        res_dir = Consts.get_result_dir()
+        res_dir = OsManager.get_result_dir()
         if Path(res_dir).exists():
             shutil.rmtree(res_dir)
         os.makedirs(res_dir)
@@ -37,7 +37,7 @@ class ScalettaManager:
         similar_ratio = 0.0
         similar = ''
         for file in self.song_source_list:
-            file_to_compare = str(file).lower().replace(Consts.get_song_dir(), '')
+            file_to_compare = str(file).lower().replace(OsManager.get_song_dir(), '')
             song_to_compare = str(song[3:]).lower()
             this_ratio = SequenceMatcher(None, file_to_compare, song_to_compare).ratio()
             if this_ratio > similar_ratio:
@@ -55,10 +55,10 @@ class ScalettaManager:
             cont = ScalettaManager.__next_cont__(cont)
             chosen_file = self.__find_most_similar__(song)
             if not chosen_file == "None":
-                destination = Consts.get_result_dir()+cont+" - "+str(chosen_file).replace(Consts.get_song_dir(), '')
+                destination = OsManager.get_result_dir()+cont+" - "+str(chosen_file).replace(OsManager.get_song_dir(), '')
                 shutil.copytree(chosen_file, destination)
 
         # Se vanno messe anche le strumentali, eseguiamo anche questa parte
         if with_instrumental:
-            for file in (x for x in self.song_source_list if str(x).startswith(Consts.get_song_dir()+"00")):
-                shutil.copytree(file, str(file).replace(Consts.get_song_dir(), Consts.get_result_dir()))
+            for file in (x for x in self.song_source_list if str(x).startswith(OsManager.get_song_dir()+"00")):
+                shutil.copytree(file, str(file).replace(OsManager.get_song_dir(), OsManager.get_result_dir()))

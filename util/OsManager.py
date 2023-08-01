@@ -2,15 +2,18 @@ import os
 
 
 class Consts:
-    #Windows folders
+    # Windows folders
     __WIN_SONG_DIR__ = 'data\\songs\\'
     __WIN_RESULT_DIR__ = 'result\\'
     __WIN_DATA_DIR__ = 'data\\'
-    #Linux folders
+
+    # Linux folders
     __LX_SONG_DIR__ = 'data/songs/'
     __LX_RESULT_DIR__ = 'result/'
     __LX_DATA_DIR__ = 'data/'
 
+
+class OsManager:
 
     @staticmethod
     def get_song_dir():
