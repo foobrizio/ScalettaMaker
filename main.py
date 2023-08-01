@@ -8,7 +8,7 @@ from util.ScalettaManager import ScalettaManager
 
 def choose_file():
 
-    list_of_files = [x for x in Path(Consts.DATA_DIR).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
+    list_of_files = [x for x in Path(Consts.get_data_dir()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
     if len(list_of_files) == 0:
         print("Nessun file .pdf trovato nella cartella 'data'")
         exit(0)
@@ -28,7 +28,7 @@ def choose_file():
 
 
 def song_check():
-    list_of_files = [x for x in Path(Consts.SONG_DIR).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
+    list_of_files = [x for x in Path(Consts.get_song_dir()).iterdir() if x.is_dir()]
     return len(list_of_files) > 0
 
 
