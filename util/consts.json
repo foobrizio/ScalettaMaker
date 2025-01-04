@@ -1,0 +1,14 @@
+{
+  "winSongDir": "data\\songs\\",
+  "winResultDir": "result\\",
+  "winDataDir":"data\\",
+  "linuxSongDir":"data/songs/",
+  "linuxResultDir": "result/",
+  "linuxDataDir": "data/",
+
+  "genericSongDir" : "-- Generiche --",
+  "fabrizioSongDir" : "-- Per Fabrizio --",
+  "sergioSongDir" : "-- Per Sergio --",
+  "fabrizioGuitarist": "Fabrizio",
+  "sergioGuitarist": "Sergio"
+}
