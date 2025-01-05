@@ -46,13 +46,15 @@ def song_check():
 
 
 if __name__ == '__main__':
-
     if not song_check():
-        print("Non sono state trovate canzoni nella cartella 'data/songs'. Scaricare le nuove canzoni da Proton Drive.")
-        exit(0)
-    pdfFile = choose_file()
-    guitarist = choose_guitarist()
-    song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
-    ScalettaManager(song_list, guitarist).make_scaletta(True)
+        directory = utils.get_song_directory()
+        print(f"Non sono state trovate canzoni nella cartella '{directory}'. Scaricare le nuove canzoni da Proton Drive.")
+    else:
+        pdfFile = choose_file()
+        guitarist = choose_guitarist()
+        song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
+        ScalettaManager(song_list, guitarist).make_scaletta(True)
+    input("Premere Invio per terminare ")
+    sys.exit(0)
 
 

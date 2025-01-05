@@ -82,7 +82,7 @@ class ScalettaManager:
         for song in self.scaletta_latex:
             song_title = song.split(".")[1].strip()
             cont = ScalettaManager.__next_cont__(cont)
-            print(f"Song {cont}/{len(self.scaletta_latex)}...", end='')
+            print(f"Canzone {cont}/{len(self.scaletta_latex)}...", end='')
             has_alternative_titles, alt_titles = ScalettaManager.get_alternative_titles_if_existing(song_title)
             all_titles = [song_title]
             if has_alternative_titles:
@@ -96,11 +96,11 @@ class ScalettaManager:
                     copied = True
                     break
             if copied:
-                print("Copied!!!")
+                print("Copiato!!!")
             else:
                 self.skipped_songs.append(song)
-                print("Skipped!!!")
-        print(f"Process finished. The following {len(self.skipped_songs)} songs were not found:")
+                print("Non trovato!!!")
+        print(f"Processo terminato. Le seguenti {len(self.skipped_songs)} canzoni non sono state trovate:")
         print(self.skipped_songs)
 
         # Se vanno messe anche le strumentali, eseguiamo anche questa parte
