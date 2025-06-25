@@ -12,8 +12,8 @@ def choose_file():
 
     list_of_files = [x for x in Path(utils.get_data_directory()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
     if len(list_of_files) == 0:
-        print("Nessun file .pdf trovato nella cartella 'data'")
-        exit(0)
+        print("Nessun file .pdf trovato nella cartella 'data'. Inserire un file da usare come scaletta")
+        return None
     elif len(list_of_files) == 1:
         return list_of_files[0]
     else:
@@ -51,9 +51,10 @@ if __name__ == '__main__':
         print(f"Non sono state trovate canzoni nella cartella '{directory}'. Scaricare le nuove canzoni da Proton Drive.")
     else:
         pdfFile = choose_file()
-        guitarist = choose_guitarist()
-        song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
-        ScalettaManager(song_list, guitarist).make_scaletta(True)
+        if pdfFile is not None:
+            guitarist = choose_guitarist()
+            song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
+            ScalettaManager(song_list, guitarist).make_scaletta(True)
     input("Premere Invio per terminare ")
     sys.exit(0)
 
