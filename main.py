@@ -12,7 +12,8 @@ def choose_file():
 
     list_of_files = [x for x in Path(utils.get_data_directory()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
     if len(list_of_files) == 0:
-        print("Nessun file .pdf trovato nella cartella 'data'. Inserire un file da usare come scaletta")
+        data_dir = utils.get_data_directory()
+        print(f"Nessun file .pdf trovato nella cartella '{data_dir}'. Inserire un file da usare come scaletta")
         return None
     elif len(list_of_files) == 1:
         return list_of_files[0]
