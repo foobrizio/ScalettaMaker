@@ -2,18 +2,23 @@ import json
 import os
 from difflib import SequenceMatcher
 
+def __read_json_file__(file_path: str):
+    try:
+        with open(file_path) as f:
+            result = json.load(f)
+            return result
+    except Exception as e:
+        raise Exception(f"Il file {file_path} è malformato")
 
 def __get_constants__(property_name: str):
-    with open('util/consts.json') as f:
-        consts = json.load(f)
-        property = consts.get(property_name)
-        if property is None:
-            raise Exception(f"property '{property_name}' non inizializzata")
-        return property
+    consts = __read_json_file__("util/consts.json")
+    property = consts.get(property_name)
+    if property is None:
+        raise Exception(f"property '{property_name}' non inizializzata")
+    return property
 
 def get_rules():
-    with open('util/specialRules.json') as spf:
-        return json.load(spf)
+    return __read_json_file__('util/specialRules.json')
 
 def is_similar(string1: str, string2: str) -> bool:
     string1 = string1.lower()
