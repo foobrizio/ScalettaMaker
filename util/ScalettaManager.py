@@ -1,7 +1,9 @@
 import os
-from pathlib import Path
+from pathlib import Path, WindowsPath
 from difflib import SequenceMatcher
 import shutil
+
+import win32com.client
 
 from util import utils
 
@@ -13,6 +15,7 @@ class ScalettaManager:
         self.guitarist = guitarist
         self.__prepare_song_source_list__()
         self.skipped_songs = []
+        self.similarity = utils.get_similarity()
 
     """Creates an array of song titles, based on the available directories in the songs folder"""
     def __prepare_song_source_list__(self) -> [str]:
@@ -60,7 +63,7 @@ class ScalettaManager:
         return False, []
 
 
-    def __find_most_similar__(self, song: str) -> str:
+    def __find_most_similar__(self, song: str) -> WindowsPath:
         similar_ratio = 0.0
         similar = ''
         for file in self.song_source_list:
@@ -92,14 +95,17 @@ class ScalettaManager:
                 chosen_file = self.__find_most_similar__(title)
                 if not chosen_file == "None":
                     destination = utils.get_result_directory()+cont+" - "+utils.extract_song_title(str(chosen_file))
+                    if utils.is_windows():
+                        # Possiamo andare a verificare se ci sono file sincronizzati su Cloud
+                        self.__check_file_sync_with_cloud__(chosen_file)
                     shutil.copytree(chosen_file, destination)
                     copied = True
                     break
             if copied:
-                print("Copiato!!!")
+                print("Copiato.")
             else:
                 self.skipped_songs.append(song)
-                print("Non trovato!!!")
+                print("Non trovato!")
         print(f"Processo terminato. Le seguenti {len(self.skipped_songs)} canzoni non sono state trovate:")
         print(self.skipped_songs)
 
@@ -107,3 +113,14 @@ class ScalettaManager:
         # if with_instrumental:
         #    for file in (x for x in self.song_source_list if str(x).startswith(OsManager.get_song_dir()+"00")):
         #        shutil.copytree(file, str(file).replace(OsManager.get_song_dir(), OsManager.get_result_dir()))
+
+    def __check_file_sync_with_cloud__(self, file_path: WindowsPath):
+        file_path = str(file_path)
+        shell = win32com.client.Dispatch("Shell.Application")
+        folder = shell.NameSpace(file_path.rsplit("\\", 1)[0])
+        item = folder.ParseName(file_path.rsplit("\\", 1)[1])
+        for i in range(0, 300):  # Esplora fino a 300 proprietà
+            name = folder.GetDetailsOf(None, i)
+            value = folder.GetDetailsOf(item, i)
+            if i == 296:
+                print(f"{name} => {value}")

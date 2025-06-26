@@ -10,5 +10,7 @@
   "fabrizioSongDir" : "-- Per Fabrizio --",
   "sergioSongDir" : "-- Per Sergio --",
   "fabrizioGuitarist": "Fabrizio",
-  "sergioGuitarist": "Sergio"
+  "sergioGuitarist": "Sergio",
+
+  "similarity": 0.7
 }

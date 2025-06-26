@@ -3,9 +3,13 @@ import os
 from difflib import SequenceMatcher
 
 
-def get_constants():
+def __get_constants__(property_name: str):
     with open('util/consts.json') as f:
-        return json.load(f)
+        consts = json.load(f)
+        property = consts.get(property_name)
+        if property is None:
+            raise Exception(f"property '{property_name}' non inizializzata")
+        return property
 
 def get_rules():
     with open('util/specialRules.json') as spf:
@@ -18,36 +22,42 @@ def is_similar(string1: str, string2: str) -> bool:
     return similar_ratio > 0.7
 
 def extract_song_title(file) -> str:
-    if os.name == 'nt':
+    if is_windows():
         parts: [str] = str(file).split("\\")
-    elif os.name == 'posix':
+    elif is_linux():
         parts: [str] = str(file).split("/")
     return parts[-1]
 
     
 def get_song_directory():
-    if os.name == 'nt':
-        return get_constants().get("winSongDir")
-    elif os.name == 'posix':
-        return get_constants().get("linuxSongDir")
+    if is_windows():
+        return __get_constants__("winSongDir")
+    elif is_linux():
+        return __get_constants__("linuxSongDir")
     else:
         raise Exception(os.name+' OS is not currently supported')
 
 def get_generic_song_directory():
     base = get_song_directory()
-    if os.name == 'nt':
-        return base + "\\"+get_constants().get("genericSongDir")
-    elif os.name == 'posix':
-        return base + "/"+get_constants().get("genericSongDir")
+    if is_windows():
+        return base + "\\"+__get_constants__("genericSongDir")
+    elif is_linux():
+        return base + "/"+__get_constants__("genericSongDir")
     else:
         raise Exception(os.name+' OS is not currently supported')
 
+def is_windows() -> bool:
+    return os.name == 'nt'
+
+def is_linux() -> bool:
+    return os.name == 'posiz'
+
 def get_guitarist_song_directory(guitarist: str):
     base = get_song_directory()
-    if guitarist == get_constants().get("fabrizioGuitarist"):
-        guitar_folder = get_constants().get("fabrizioSongDir")
+    if guitarist == __get_constants__("fabrizioGuitarist"):
+        guitar_folder = __get_constants__("fabrizioSongDir")
     else:
-        guitar_folder = get_constants().get("sergioSongDir")
+        guitar_folder = __get_constants__("sergioSongDir")
     if os.name == 'nt':
         return base + "\\" + guitar_folder
     elif os.name == 'posix':
@@ -55,18 +65,27 @@ def get_guitarist_song_directory(guitarist: str):
     else:
         raise Exception(os.name + ' OS is not currently supported')
 
+def get_fabrizio() -> str:
+    return __get_constants__("fabrizioGuitarist")
+
+def get_sergio() -> str:
+    return __get_constants__("sergioGuitarist")
+
+def get_similarity() -> float:
+    return __get_constants__("similarity")
+
 def get_result_directory():
-    if os.name == 'nt':
-        return get_constants().get("winResultDir")
-    elif os.name == 'posix':
-        return get_constants().get("linuxResultDier")
+    if is_windows():
+        return __get_constants__("winResultDir")
+    elif is_linux():
+        return __get_constants__("linuxResultDir")
     else:
         raise Exception(os.name + ' OS is not currently supported')
 
 def get_data_directory():
-    if os.name == 'nt':
-        return get_constants().get("winDataDir")
-    elif os.name == 'posix':
-        return get_constants().get("linuxDataDir")
+    if is_windows():
+        return __get_constants__("winDataDir")
+    elif is_linux():
+        return __get_constants__("linuxDataDir")
     else:
         raise Exception(os.name+' OS is not currently supported')

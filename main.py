@@ -13,8 +13,7 @@ def choose_file():
     list_of_files = [x for x in Path(utils.get_data_directory()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
     if len(list_of_files) == 0:
         data_dir = utils.get_data_directory()
-        print(f"Nessun file .pdf trovato nella cartella '{data_dir}'. Inserire un file da usare come scaletta")
-        return None
+        raise Exception(f"Nessun file .pdf trovato nella cartella '{data_dir}'. Inserire un file da usare come scaletta")
     elif len(list_of_files) == 1:
         return list_of_files[0]
     else:
@@ -31,13 +30,12 @@ def choose_file():
 
 def choose_guitarist() -> str:
     choice = input("Qual è il chitarrista di questa serata? -> ")
-    if utils.is_similar(choice, utils.get_constants().get("fabrizioGuitarist")):
-        guitarist = utils.get_constants().get("fabrizioGuitarist")
-    elif utils.is_similar(choice, utils.get_constants().get("sergioGuitarist")):
-        guitarist = utils.get_constants().get("sergioGuitarist")
+    if utils.is_similar(choice, utils.get_fabrizio()):
+        guitarist = utils.get_fabrizio()
+    elif utils.is_similar(choice, utils.get_sergio()):
+        guitarist = utils.get_sergio()
     else:
-        print(f"Il chitarrista {choice} non è stato riconosciuto. Impossibile continuare")
-        sys.exit(0)
+        raise Exception(f"Il chitarrista {choice} non è stato riconosciuto. Impossibile continuare")
     return guitarist
 
 
@@ -47,15 +45,18 @@ def song_check():
 
 
 if __name__ == '__main__':
-    if not song_check():
-        directory = utils.get_song_directory()
-        print(f"Non sono state trovate canzoni nella cartella '{directory}'. Scaricare le nuove canzoni da Proton Drive.")
-    else:
-        pdfFile = choose_file()
-        if pdfFile is not None:
-            guitarist = choose_guitarist()
-            song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
-            ScalettaManager(song_list, guitarist).make_scaletta(True)
+    try:
+        if not song_check():
+            directory = utils.get_song_directory()
+            raise Exception(f"Non sono state trovate canzoni nella cartella '{directory}'. Scaricare le nuove canzoni da Proton Drive.")
+        else:
+            pdfFile = choose_file()
+            if pdfFile is not None:
+                guitarist = choose_guitarist()
+                song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
+                ScalettaManager(song_list, guitarist).make_scaletta(True)
+    except Exception as err:
+        print(str(err))
     input("Premere Invio per terminare ")
     sys.exit(0)
 
