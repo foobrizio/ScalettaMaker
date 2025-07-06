@@ -21,7 +21,7 @@ class ScalettaManager:
     def __prepare_song_source_list__(self) -> [str]:
         generic_songs = ScalettaManager.__load_generic_in_source_list__()
         guitarist_songs = ScalettaManager.__load_specifics_in_source_list__(self.guitarist)
-        self.song_source_list = generic_songs + guitarist_songs
+        self.song_source_list = guitarist_songs + generic_songs
 
     @staticmethod
     def __load_generic_in_source_list__() -> [str]:
@@ -65,6 +65,7 @@ class ScalettaManager:
 
     def __find_most_similar__(self, song: str) -> WindowsPath:
         similar_ratio = 0.0
+        similarity = utils.get_similarity()
         similar = ''
         for file in self.song_source_list:
             song_title = utils.extract_song_title(file).lower()
@@ -74,7 +75,7 @@ class ScalettaManager:
             if this_ratio > similar_ratio:
                 similar_ratio = this_ratio
                 similar = file
-        if similar_ratio > 0.7:
+        if similar_ratio > similarity:
             return similar
         else:
             return "None"

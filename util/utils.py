@@ -24,7 +24,7 @@ def is_similar(string1: str, string2: str) -> bool:
     string1 = string1.lower()
     string2 = string2.lower()
     similar_ratio = SequenceMatcher(None, string1, string2).ratio()
-    return similar_ratio > 0.7
+    return similar_ratio > get_similarity()
 
 def extract_song_title(file) -> str:
     if is_windows():
