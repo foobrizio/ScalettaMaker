@@ -5,7 +5,7 @@ import shutil
 
 import win32com.client
 
-from util import utils
+from util import utils, directory_utils as dir_utils
 
 
 class ScalettaManager:
@@ -18,37 +18,37 @@ class ScalettaManager:
         self.similarity = utils.get_similarity()
 
     """Creates an array of song titles, based on the available directories in the songs folder"""
-    def __prepare_song_source_list__(self) -> [str]:
+    def __prepare_song_source_list__(self) -> None:
         generic_songs = ScalettaManager.__load_generic_in_source_list__()
         guitarist_songs = ScalettaManager.__load_specifics_in_source_list__(self.guitarist)
         self.song_source_list = generic_songs + guitarist_songs
 
     @staticmethod
-    def __load_generic_in_source_list__() -> [str]:
-        generic_path = Path(utils.get_generic_song_directory())
+    def __load_generic_in_source_list__() -> list[str]:
+        generic_path = Path(dir_utils.get_generic_song_directory())
         generic_songs = []
         for directory in filter(lambda x: Path.is_dir(x), Path(generic_path).iterdir()):
             generic_songs.append(directory)
         return generic_songs
 
     @staticmethod
-    def __load_specifics_in_source_list__(guitarist: str) -> [str]:
-        guitarist_path = Path(utils.get_guitarist_song_directory(guitarist))
+    def __load_specifics_in_source_list__(guitarist: str) -> list[str]:
+        guitarist_path = Path(dir_utils.get_guitarist_song_directory(guitarist))
         guitarist_songs = []
         for directory in filter(lambda x: Path.is_dir(x), Path(guitarist_path).iterdir()):
             guitarist_songs.append(directory)
         return guitarist_songs
 
     @staticmethod
-    def __next_cont__(cont: str):
+    def __next_cont__(cont: str) -> str:
         if int(cont) < 9:
             return "0"+str(int(cont)+1)
         else:
             return str(int(cont)+1)
 
     @staticmethod
-    def __delete_dest_folder():
-        res_dir = utils.get_result_directory()
+    def __delete_dest_folder() -> None:
+        res_dir = dir_utils.get_result_directory()
         if Path(res_dir).exists():
             shutil.rmtree(res_dir)
         os.makedirs(res_dir)
@@ -67,7 +67,7 @@ class ScalettaManager:
         similar_ratio = 0.0
         similar = ''
         for file in self.song_source_list:
-            song_title = utils.extract_song_title(file).lower()
+            song_title = dir_utils.extract_song_title(file).lower()
             #song_to_compare = str(song[3:]).lower()
             song = song.lower()
             this_ratio = SequenceMatcher(None, song_title, song).ratio()
@@ -94,8 +94,8 @@ class ScalettaManager:
             for title in all_titles:
                 chosen_file = self.__find_most_similar__(title)
                 if not chosen_file == "None":
-                    destination = utils.get_result_directory()+cont+" - "+utils.extract_song_title(str(chosen_file))
-                    if utils.is_windows():
+                    destination = dir_utils.get_result_directory()+cont+" - "+dir_utils.extract_song_title(str(chosen_file))
+                    if dir_utils.is_windows():
                         # Possiamo andare a verificare se ci sono file sincronizzati su Cloud
                         self.__check_file_sync_with_cloud__(chosen_file)
                     shutil.copytree(chosen_file, destination)

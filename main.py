@@ -1,18 +1,18 @@
 # importing required modules
 import sys
 
-from util import utils
+from modules.SongAnalyzer import SongAnalyzer
+from util import utils, directory_utils as dir_utils, cmd_utils
 from pathlib import Path
 
-from util.MyPdfReader import MyPdfReader
-from util.ScalettaManager import ScalettaManager
+from modules.MyPdfReader import MyPdfReader
+from modules.ScalettaManager import ScalettaManager
 
 
 def choose_file():
-
-    list_of_files = [x for x in Path(utils.get_data_directory()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
+    list_of_files = [x for x in Path(dir_utils.get_data_directory()).iterdir() if x.is_file() and x.suffix.__eq__('.pdf')]
     if len(list_of_files) == 0:
-        data_dir = utils.get_data_directory()
+        data_dir = dir_utils.get_data_directory()
         raise Exception(f"Nessun file .pdf trovato nella cartella '{data_dir}'. Inserire un file da usare come scaletta")
     elif len(list_of_files) == 1:
         return list_of_files[0]
@@ -40,14 +40,14 @@ def choose_guitarist() -> str:
 
 
 def song_check():
-    list_of_files = [x for x in Path(utils.get_song_directory()).iterdir() if x.is_dir()]
+    list_of_files = [x for x in Path(dir_utils.get_song_directory()).iterdir() if x.is_dir()]
     return len(list_of_files) > 0
 
 
 if __name__ == '__main__':
     try:
         if not song_check():
-            directory = utils.get_song_directory()
+            directory = dir_utils.get_song_directory()
             raise Exception(f"Non sono state trovate canzoni nella cartella '{directory}'. Scaricare le nuove canzoni da Proton Drive.")
         else:
             pdfFile = choose_file()
@@ -55,6 +55,13 @@ if __name__ == '__main__':
                 guitarist = choose_guitarist()
                 song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
                 ScalettaManager(song_list, guitarist).make_scaletta(True)
+        yesno_key = 'yes'
+        while yesno_key == 'bho':
+            yesno_key= cmd_utils.recognize_yesno(input("Vuoi verificare la tonalità delle canzoni? "))
+        if yesno_key == 'yes':
+            analyzer = SongAnalyzer('result/')
+            analyzer.start_analysis()
+            analyzer.print_result()
     except Exception as err:
         print(str(err))
     input("Premere Invio per terminare ")

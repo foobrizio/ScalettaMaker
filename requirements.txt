@@ -1,2 +1,5 @@
 PyPDF2
 pywin32
+librosa
+numpy
+soundfile
