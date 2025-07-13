@@ -6,14 +6,19 @@ import librosa
 import numpy as np
 import os
 
+from util import utils
+
+
 @dataclass
 class Song:
+    song_number: int
     song_track: str
     song_folder: str
     click_track: str
     title: str
 
-    def __init__(self, song_track: str, song_folder: str, click_track: str, title: str):
+    def __init__(self, song_number: int, song_track: str, song_folder: str, click_track: str, title: str):
+        self.song_number = song_number
         self.song_track = song_track
         self.song_folder = song_folder
         self.click_track = click_track
@@ -25,6 +30,7 @@ class Song:
     def click_path(self)-> str:
         return f'{self.song_folder}/{self.click_track}'
 
+@dataclass
 class AnalysisResult:
     title: str
     key: str
@@ -34,6 +40,15 @@ class AnalysisResult:
         self.title = title
         self.key = key
         self.tempo = tempo
+
+@dataclass
+class SongRules:
+    duration: float
+    offset: float
+
+    def __init(self, duration: float, offset: float):
+        self.duration = duration
+        self.offset = offset
 
 
 class SongAnalyzer:
@@ -56,8 +71,11 @@ class SongAnalyzer:
             files = os.listdir(song_folder)
             song_track = next(filter(lambda x: '01' in x, files))
             click_track = next(filter(lambda x: '03' in x, files))
-            title = song_dir
-            result.append(Song(song_track=song_track,
+            song_parts = song_dir.split('-')
+            title = song_parts[1].strip()
+            song_number = int(song_parts[0].strip())
+            result.append(Song(song_number=song_number,
+                               song_track=song_track,
                                click_track=click_track,
                                song_folder=song_folder,
                                title=title))
@@ -71,7 +89,14 @@ class SongAnalyzer:
     def estimate_key(self, song: Song) -> AnalysisResult:
         print(f"Analisi {song.title} in corso...")
         audio_path = song.song_path()
-        y, sr = librosa.load(audio_path, sr=22050, mono=True, duration=60.0)
+        if self.__has_custom_rule__(song.title):
+            print(f"Special rule for {song.title}")
+            song_rules = self.__get_custom_rule__(song.title)
+            y,sr = librosa.load(audio_path, sr=22050, duration=song_rules.duration, offset=song_rules.offset)
+        else:
+            y, sr = librosa.load(audio_path, sr=22050, duration=60.0)
+        y, sr = self.__estimate_with_peak__(y,sr,audio_path)
+
 
         # Estrae cromagramma (intensità delle 12 note in ogni istante)
         chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
@@ -105,6 +130,34 @@ class SongAnalyzer:
         else:
             return AnalysisResult(title=song.title,
                                   key=minor_keys[best_minor])
+
+    def __estimate_with_peak__(self, y, sr, audio_path: str):
+        # Calcola energia per frame
+        rms = librosa.feature.rms(y=y)[0]
+        frame_length = 2048
+        hop_length = 512
+
+        # Trova l'indice del picco
+        max_idx = rms.argmax()
+
+        # Converti in secondi
+        start_sec = max_idx * hop_length / sr
+        print(f"Analizzo intorno a {start_sec:.2f} secondi")
+
+        # Ritaglia attorno al picco
+        return librosa.load(audio_path, offset=start_sec, duration=30.0)
+
+
+    def __has_custom_rule__(self, song: str) -> bool:
+        rules = utils.get_analysis_rules()
+        rule = rules.get(song)
+        return rule is not None
+
+    def __get_custom_rule__(self, song: str)-> SongRules:
+        rules = utils.get_analysis_rules()
+        song_rule = rules.get(song)
+        return SongRules(duration=song_rule['duration'],
+                         offset=song_rule['start'])
 
     def print_result(self):
         print("Risultato analisi:")

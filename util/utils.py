@@ -19,6 +19,9 @@ def get_constants(property_name: str):
 def get_rules():
     return __read_json_file__('conf/specialRules.json')
 
+def get_analysis_rules():
+    return __read_json_file__('conf/analysisRules.json')
+
 def is_similar(string1: str, string2: str) -> bool:
     string1 = string1.lower()
     string2 = string2.lower()
