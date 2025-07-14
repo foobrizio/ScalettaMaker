@@ -4,8 +4,8 @@ import sys
 from util import utils
 from pathlib import Path
 
-from util.MyPdfReader import MyPdfReader
-from util.ScalettaManager import ScalettaManager
+from modules.MyPdfReader import MyPdfReader
+from modules.ScalettaManager import ScalettaManager
 
 
 def choose_file():

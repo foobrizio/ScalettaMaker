@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from difflib import SequenceMatcher
 
 def __read_json_file__(file_path: str):
@@ -26,12 +27,18 @@ def is_similar(string1: str, string2: str) -> bool:
     similar_ratio = SequenceMatcher(None, string1, string2).ratio()
     return similar_ratio > get_similarity()
 
-def extract_song_title(file) -> str:
+def extract_song_title(file, include_key: bool = False) -> str:
     if is_windows():
         parts: [str] = str(file).split("\\")
     elif is_linux():
         parts: [str] = str(file).split("/")
-    return parts[-1]
+    fullname = parts[-1]
+    if not include_key:
+        match = re.match(r'^(.*?)\s*\(.*\)$', fullname)
+        title = match.group(1).strip() if match else fullname.strip()
+        return title
+    return fullname
+
 
     
 def get_song_directory():

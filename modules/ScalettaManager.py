@@ -68,7 +68,7 @@ class ScalettaManager:
         similarity = utils.get_similarity()
         similar = ''
         for file in self.song_source_list:
-            song_title = utils.extract_song_title(file).lower()
+            song_title = utils.extract_song_title(file, False).lower()
             #song_to_compare = str(song[3:]).lower()
             song = song.lower()
             this_ratio = SequenceMatcher(None, song_title, song).ratio()
@@ -95,7 +95,7 @@ class ScalettaManager:
             for title in all_titles:
                 chosen_file = self.__find_most_similar__(title)
                 if not chosen_file == "None":
-                    destination = utils.get_result_directory()+cont+" - "+utils.extract_song_title(str(chosen_file))
+                    destination = utils.get_result_directory()+cont+" - "+utils.extract_song_title(str(chosen_file), True)
                     if utils.is_windows():
                         # Possiamo andare a verificare se ci sono file sincronizzati su Cloud
                         self.__check_file_sync_with_cloud__(chosen_file)
