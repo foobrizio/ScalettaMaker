@@ -1,6 +1,7 @@
 # importing required modules
 import sys
 
+from modules.TrackChecker import TrackChecker
 from util import utils
 from pathlib import Path
 
@@ -54,7 +55,11 @@ if __name__ == '__main__':
             if pdfFile is not None:
                 guitarist = choose_guitarist()
                 song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
-                ScalettaManager(song_list, guitarist).make_scaletta(True)
+                scalettaMgr = ScalettaManager(song_list, guitarist)
+                song_source_list = scalettaMgr.song_source_list
+                scalettaMgr.make_scaletta(True)
+                trackChecker = TrackChecker(song_source_list)
+                trackChecker.start_check()
     except Exception as err:
         print(str(err))
     input("Premere Invio per terminare ")
