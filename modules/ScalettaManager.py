@@ -18,13 +18,13 @@ class ScalettaManager:
         self.similarity = utils.get_similarity()
 
     """Creates an array of song titles, based on the available directories in the songs folder"""
-    def __prepare_song_source_list__(self) -> [str]:
+    def __prepare_song_source_list__(self):
         generic_songs = ScalettaManager.__load_generic_in_source_list__()
         guitarist_songs = ScalettaManager.__load_specifics_in_source_list__(self.guitarist)
         self.song_source_list = guitarist_songs + generic_songs
 
     @staticmethod
-    def __load_generic_in_source_list__() -> [str]:
+    def __load_generic_in_source_list__() -> list[str]:
         generic_path = Path(utils.get_generic_song_directory())
         generic_songs = []
         for directory in filter(lambda x: Path.is_dir(x), Path(generic_path).iterdir()):
@@ -32,7 +32,7 @@ class ScalettaManager:
         return generic_songs
 
     @staticmethod
-    def __load_specifics_in_source_list__(guitarist: str) -> [str]:
+    def __load_specifics_in_source_list__(guitarist: str) -> list[str]:
         guitarist_path = Path(utils.get_guitarist_song_directory(guitarist))
         guitarist_songs = []
         for directory in filter(lambda x: Path.is_dir(x), Path(guitarist_path).iterdir()):

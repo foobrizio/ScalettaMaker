@@ -1,12 +1,23 @@
 import os
+from pathlib import Path
 from typing import Optional
+
+from util import utils
+
+
+def __load_from_result__():
+    result_songs = []
+    for directory in filter(lambda x: Path.is_dir(x), Path(utils.get_result_directory()).iterdir()):
+        result_songs.append(directory)
+    return result_songs
+
 
 
 class TrackChecker:
 
 
-    def __init__(self, song_list: list[str]):
-        self.song_list = song_list
+    def __init__(self):
+        self.song_list = __load_from_result__()
 
     def start_check(self):
         print("Analisi tracce iniziata")
@@ -24,16 +35,16 @@ class TrackChecker:
             print("Nessuna problematica riscontrata")
         else:
             print("Sono stati trovati i seguenti problemi:")
-            for warn,index in warn_list:
+            for index,warn in enumerate(warn_list):
                 print(f"{index}): {warn}")
 
     @staticmethod
     def __check_name__(song) -> Optional[str]:
         files = os.listdir(song)
         missing_numbers: list[str] = []
-        file_01 = list(filter(lambda x: x.__contains__("01"), files))
-        file_02 = list(filter(lambda x: x.__contains__("02"), files))
-        file_03 = list(filter(lambda x: x.__contains__("03"), files))
+        file_01 = list(filter(lambda filename: filename.__contains__("1"), files))
+        file_02 = list(filter(lambda filename: filename.__contains__("2"), files))
+        file_03 = list(filter(lambda filename: filename.__contains__("3"), files))
         if len(file_01) == 0 or len(file_01) > 1:
             missing_numbers.append("01")
         if len(file_02) == 0 or len(file_03) > 1:

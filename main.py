@@ -55,10 +55,8 @@ if __name__ == '__main__':
             if pdfFile is not None:
                 guitarist = choose_guitarist()
                 song_list = MyPdfReader(pdfFile).convert_file_to_song_list()
-                scalettaMgr = ScalettaManager(song_list, guitarist)
-                song_source_list = scalettaMgr.song_source_list
-                scalettaMgr.make_scaletta(True)
-                trackChecker = TrackChecker(song_source_list)
+                ScalettaManager(song_list, guitarist).make_scaletta(True)
+                trackChecker = TrackChecker()
                 trackChecker.start_check()
     except Exception as err:
         print(str(err))
